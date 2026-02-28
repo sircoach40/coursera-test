@@ -1,9 +1,799 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<title>Hello coursera!</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dhikr al-'Aql â€” Islamic Memory Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #faf8f4;
+    --warm-white: #ffffff;
+    --ink: #1a1612;
+    --ink-soft: #3d3530;
+    --ink-light: #8a7f75;
+    --gold: #c49a3c;
+    --gold-light: #e8c96d;
+    --gold-pale: #f7f0dc;
+    --sage: #6b8f71;
+    --sage-light: #e8f0e9;
+    --blush: #c97b6b;
+    --border: #e8e0d4;
+    --shadow: rgba(26,22,18,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Lato', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(250,248,244,0.97);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 1.5rem;
+    display: flex; align-items: center; height: 60px; gap: 0;
+  }
+
+  .nav-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem; color: var(--ink);
+    margin-right: auto; display: flex; flex-direction: column; line-height: 1.1;
+  }
+  .nav-brand span { font-size: 0.62rem; color: var(--ink-light); font-family: 'Lato', sans-serif; letter-spacing: 0.12em; text-transform: uppercase; }
+
+  .nav-tabs { display: flex; }
+  .nav-tab {
+    padding: 0 0.9rem; height: 60px; border: none; background: none;
+    font-family: 'Lato', sans-serif; font-size: 0.75rem; letter-spacing: 0.07em;
+    text-transform: uppercase; color: var(--ink-light); cursor: pointer;
+    border-bottom: 2px solid transparent; transition: all 0.2s;
+    display: flex; align-items: center; gap: 0.35rem; white-space: nowrap;
+  }
+  .nav-tab:hover { color: var(--ink); }
+  .nav-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+  main { margin-top: 60px; }
+  .page { display: none; padding: 2.5rem 1.5rem; max-width: 860px; margin: 0 auto; }
+  .page.active { display: block; animation: fadeUp 0.35s ease; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+  .hero { text-align: center; padding: 3rem 0 2rem; border-bottom: 1px solid var(--border); margin-bottom: 2.5rem; }
+  .hero-arabic { font-family: 'Amiri', serif; font-size: 2.4rem; color: var(--gold); margin-bottom: 0.4rem; direction: rtl; line-height: 1.5; }
+  .hero h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 600; margin-bottom: 0.5rem; }
+  .hero p { color: var(--ink-light); font-size: 0.92rem; max-width: 460px; margin: 0 auto; }
+
+  .section-label { font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 0.3rem; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 0.25rem; }
+  .section-sub { color: var(--ink-light); font-size: 0.86rem; margin-bottom: 1.8rem; }
+
+  .card { background: var(--warm-white); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 10px var(--shadow); margin-bottom: 1rem; }
+  .card-sm { padding: 1.1rem 1.3rem; }
+
+  .pillars { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2.5rem; }
+  @media(max-width:560px){ .pillars { grid-template-columns: 1fr; } }
+  .pillar { background: var(--warm-white); border: 1px solid var(--border); border-left: 3px solid var(--gold); border-radius: 12px; padding: 1.3rem; box-shadow: 0 2px 8px var(--shadow); transition: transform 0.2s, box-shadow 0.2s; }
+  .pillar:hover { transform: translateY(-2px); box-shadow: 0 6px 18px var(--shadow); }
+  .pillar-num { font-size: 0.63rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 0.25rem; }
+  .pillar h3 { font-family: 'Playfair Display', serif; font-size: 1rem; margin-bottom: 0.25rem; }
+  .pillar p { font-size: 0.81rem; color: var(--ink-light); line-height: 1.55; }
+
+  .tracker-date { font-family: 'Playfair Display', serif; font-size: 1.05rem; text-align: center; margin-bottom: 1.5rem; color: var(--ink); }
+  .tracker-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media(max-width:500px){ .tracker-grid { grid-template-columns: 1fr; } }
+  .tracker-block { background: var(--warm-white); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; box-shadow: 0 2px 8px var(--shadow); }
+  .tracker-block h3 { font-family: 'Playfair Display', serif; font-size: 0.92rem; margin-bottom: 0.9rem; display: flex; align-items: center; gap: 0.45rem; }
+
+  .check-row { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.45rem; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s; border-radius: 4px; }
+  .check-row:last-child { border-bottom: none; }
+  .check-row:hover { background: var(--gold-pale); }
+  .check-row label { font-size: 0.85rem; cursor: pointer; flex: 1; }
+  .check-box { width: 19px; height: 19px; border: 2px solid var(--border); border-radius: 5px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
+  .check-row.done .check-box { background: var(--sage); border-color: var(--sage); }
+  .check-row.done .check-box::after { content: 'âœ“'; color: white; font-size: 0.72rem; font-weight: 700; }
+  .check-row.done label { color: var(--ink-light); text-decoration: line-through; }
+
+  .dhikr-counter { display: flex; align-items: center; gap: 0.7rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
+  .dhikr-counter:last-child { border-bottom: none; }
+  .dhikr-counter label { font-size: 0.85rem; flex: 1; }
+  .counter-ctrl { display: flex; align-items: center; gap: 0.4rem; }
+  .counter-btn { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--gold); background: none; color: var(--gold); font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .counter-btn:hover { background: var(--gold); color: white; }
+  .counter-val { font-family: 'Playfair Display', serif; font-size: 1.05rem; min-width: 2rem; text-align: center; }
+
+  .streak-bar { display: flex; gap: 0.3rem; margin-top: 0.8rem; flex-wrap: wrap; }
+  .streak-day { width: 26px; height: 26px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.62rem; font-weight: 700; background: var(--border); color: var(--ink-light); }
+  .streak-day.complete { background: var(--sage); color: white; }
+  .streak-day.today { border: 2px solid var(--gold); }
+
+  .save-btn { display: block; width: 100%; margin-top: 1.5rem; padding: 0.82rem; border: none; border-radius: 10px; background: var(--gold); color: white; font-family: 'Lato', sans-serif; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+  .save-btn:hover { background: #b08830; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(196,154,60,0.3); }
+
+  .stats-row { display: flex; gap: 1rem; margin-bottom: 1.8rem; }
+  .stat-box { flex: 1; background: var(--warm-white); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; text-align: center; box-shadow: 0 2px 8px var(--shadow); }
+  .stat-val { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--gold); }
+  .stat-label { font-size: 0.7rem; color: var(--ink-light); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 0.15rem; }
+
+  .form-group { display: flex; flex-direction: column; gap: 0.25rem; }
+  .form-group label { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-light); font-weight: 700; }
+  .form-group input, .form-group select { padding: 0.58rem 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-family: 'Lato', sans-serif; font-size: 0.86rem; background: var(--warm-white); color: var(--ink); outline: none; transition: border-color 0.2s; }
+  .form-group input:focus, .form-group select:focus { border-color: var(--gold); }
+  .add-btn { padding: 0.58rem 1.1rem; border: none; border-radius: 8px; background: var(--gold); color: white; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+  .add-btn:hover { background: #b08830; }
+
+  .surah-list { display: flex; flex-direction: column; gap: 0.7rem; }
+  .surah-item { background: var(--warm-white); border: 1px solid var(--border); border-radius: 10px; padding: 0.9rem 1rem; display: flex; align-items: center; gap: 0.9rem; flex-wrap: wrap; }
+  .surah-info { flex: 1; min-width: 120px; }
+  .surah-name { font-family: 'Playfair Display', serif; font-size: 0.98rem; }
+  .surah-meta { font-size: 0.76rem; color: var(--ink-light); margin-top: 0.1rem; }
+  .progress-bar-wrap { width: 100px; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: var(--sage); border-radius: 3px; transition: width 0.4s; }
+  .progress-label { font-size: 0.7rem; color: var(--ink-light); margin-top: 0.25rem; text-align: right; }
+  .surah-review-btn { padding: 0.3rem 0.65rem; border: 1px solid var(--gold); border-radius: 6px; background: none; color: var(--gold); font-size: 0.7rem; font-weight: 700; cursor: pointer; transition: all 0.15s; letter-spacing: 0.06em; text-transform: uppercase; }
+  .surah-review-btn:hover { background: var(--gold); color: white; }
+  .delete-btn { background: none; border: none; color: var(--border); font-size: 1rem; cursor: pointer; padding: 0.2rem; transition: color 0.15s; }
+  .delete-btn:hover { color: var(--blush); }
+
+  .empty-state { text-align: center; padding: 2.5rem; color: var(--ink-light); border: 1.5px dashed var(--border); border-radius: 12px; }
+  .empty-icon { font-size: 2.2rem; margin-bottom: 0.4rem; }
+  .empty-state p { font-size: 0.86rem; }
+
+  .badge { display: inline-block; padding: 0.18rem 0.55rem; border-radius: 20px; font-size: 0.67rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .badge-due { background: #fef3cd; color: #856404; }
+  .badge-done { background: var(--sage-light); color: var(--sage); }
+
+  .tip-tabs { display: flex; gap: 0.45rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .tip-tab { padding: 0.38rem 0.85rem; border-radius: 20px; font-size: 0.76rem; border: 1.5px solid var(--border); background: none; cursor: pointer; transition: all 0.2s; font-family: 'Lato', sans-serif; color: var(--ink-soft); }
+  .tip-tab:hover { border-color: var(--gold); color: var(--gold); }
+  .tip-tab.active { background: var(--gold); border-color: var(--gold); color: white; }
+
+  .tip-cards { display: flex; flex-direction: column; gap: 1rem; }
+  .tip-card { background: var(--warm-white); border: 1px solid var(--border); border-radius: 12px; padding: 1.3rem; box-shadow: 0 2px 8px var(--shadow); animation: fadeUp 0.3s ease; }
+  .tip-card-header { display: flex; align-items: flex-start; gap: 0.9rem; margin-bottom: 0.75rem; }
+  .tip-icon { width: 38px; height: 38px; border-radius: 9px; background: var(--gold-pale); display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0; }
+  .tip-card h3 { font-family: 'Playfair Display', serif; font-size: 1.02rem; margin-bottom: 0.12rem; }
+  .tip-card .tip-src { font-size: 0.7rem; color: var(--gold); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; }
+  .tip-card p { font-size: 0.86rem; color: var(--ink-soft); line-height: 1.65; }
+  .arabic-quote { font-family: 'Amiri', serif; font-size: 1.15rem; direction: rtl; color: var(--gold); margin: 0.75rem 0 0.25rem; text-align: right; line-height: 1.8; }
+  .translation { font-size: 0.8rem; color: var(--ink-light); font-style: italic; margin-bottom: 0.6rem; }
+  .science-note { margin-top: 0.85rem; padding: 0.65rem 0.9rem; background: var(--sage-light); border-left: 3px solid var(--sage); border-radius: 0 8px 8px 0; font-size: 0.8rem; color: var(--ink-soft); }
+  .science-note strong { color: var(--sage); }
+
+  .quiz-add-row { display: flex; gap: 0.65rem; margin-bottom: 0.6rem; }
+  .quiz-add-row input { flex: 1; padding: 0.62rem 0.85rem; border: 1px solid var(--border); border-radius: 8px; font-family: 'Lato', sans-serif; font-size: 0.86rem; background: var(--warm-white); outline: none; color: var(--ink); }
+  .quiz-add-row input:focus { border-color: var(--gold); }
+
+  .flashcard-deck { display: flex; flex-direction: column; gap: 0.55rem; margin-bottom: 1.5rem; }
+  .flashcard-item { display: flex; gap: 0.7rem; padding: 0.85rem 1rem; background: var(--warm-white); border: 1px solid var(--border); border-radius: 10px; align-items: center; }
+  .fc-q { flex: 1; font-size: 0.86rem; }
+  .fc-a { flex: 1; font-size: 0.86rem; color: var(--ink-light); font-style: italic; }
+  .fc-sep { color: var(--border); font-size: 0.9rem; }
+
+  .progress-indicator { font-size: 0.76rem; color: var(--ink-light); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 1.5rem; text-align: center; }
+
+  .flashcard { perspective: 1000px; width: 100%; max-width: 480px; margin: 0 auto 1.5rem; cursor: pointer; }
+  .flashcard-inner { position: relative; width: 100%; height: 190px; transform-style: preserve-3d; transition: transform 0.5s; }
+  .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+  .fc-front, .fc-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.4rem; box-shadow: 0 4px 18px var(--shadow); border: 1px solid var(--border); }
+  .fc-front { background: var(--warm-white); }
+  .fc-back { background: var(--gold-pale); transform: rotateY(180deg); }
+  .fc-label { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 0.75rem; }
+  .fc-question { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--ink); text-align: center; }
+  .fc-answer { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--ink); text-align: center; }
+  .fc-hint { font-size: 0.78rem; color: var(--ink-light); margin-top: 0.5rem; }
+
+  .rating-row { display: flex; gap: 0.7rem; justify-content: center; margin-top: 0.5rem; }
+  .rate-btn { padding: 0.5rem 1.2rem; border-radius: 8px; border: 1.5px solid; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.2s; font-family: 'Lato', sans-serif; letter-spacing: 0.06em; }
+  .rate-again { border-color: var(--blush); color: var(--blush); background: none; }
+  .rate-again:hover { background: var(--blush); color: white; }
+  .rate-good { border-color: var(--gold); color: var(--gold); background: none; }
+  .rate-good:hover { background: var(--gold); color: white; }
+  .rate-easy { border-color: var(--sage); color: var(--sage); background: none; }
+  .rate-easy:hover { background: var(--sage); color: white; }
+
+  .quiz-complete { text-align: center; padding: 2.5rem; animation: fadeUp 0.4s ease; }
+  .quiz-complete .big-icon { font-size: 3rem; margin-bottom: 0.8rem; }
+  .quiz-complete h3 { font-family: 'Playfair Display', serif; font-size: 1.35rem; margin-bottom: 0.5rem; }
+  .quiz-complete p { color: var(--ink-light); font-size: 0.88rem; }
+
+  .start-btn { padding: 0.82rem 1.8rem; border: none; border-radius: 10px; background: var(--ink); color: white; font-family: 'Lato', sans-serif; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.45rem; }
+  .start-btn:hover { background: var(--gold); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,0.14); }
+
+  .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 999; background: var(--ink); color: white; padding: 0.75rem 1.1rem; border-radius: 10px; font-size: 0.83rem; opacity: 0; transform: translateY(8px); transition: all 0.3s; pointer-events: none; }
+  .toast.show { opacity: 1; transform: translateY(0); }
+</style>
 </head>
 <body>
-<h1>Hello coursera! It's a great course</h1>
+
+<nav>
+  <div class="nav-brand">
+    Dhikr al-Ê¿Aql
+    <span>Islamic Memory Builder</span>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('home')" id="tab-home">ðŸ  Home</button>
+    <button class="nav-tab" onclick="showPage('tracker')" id="tab-tracker">ðŸ“¿ Tracker</button>
+    <button class="nav-tab" onclick="showPage('quran')" id="tab-quran">ðŸ“– Quran</button>
+    <button class="nav-tab" onclick="showPage('tips')" id="tab-tips">ðŸ’¡ Lessons</button>
+    <button class="nav-tab" onclick="showPage('quiz')" id="tab-quiz">ðŸ§  Quiz</button>
+  </div>
+</nav>
+
+<main>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-arabic">Ø§Ù‚Ù’Ø±ÙŽØ£Ù’ Ø¨ÙØ§Ø³Ù’Ù…Ù Ø±ÙŽØ¨ÙÙ‘ÙƒÙŽ Ø§Ù„ÙŽÙ‘Ø°ÙÙŠ Ø®ÙŽÙ„ÙŽÙ‚ÙŽ</div>
+    <h1>Build a Memory Pleasing to Allah</h1>
+    <p>A daily companion grounded in the Islamic theory of memory â€” the four pillars practiced by the greatest scholars of Islam.</p>
+  </div>
+
+  <div class="section-label">The Four Pillars</div>
+  <p class="section-sub">From the lives of Imam Shafi'i, Imam Ahmad ibn Hanbal, and Imam Bukhari â€” confirmed by modern cognitive science.</p>
+
+  <div class="pillars">
+    <div class="pillar">
+      <div class="pillar-num">Pillar One</div>
+      <h3>Taqwa â€” Clear Heart</h3>
+      <p>Sins create internal noise that clouds memory. Ibn al-Qayyim: "Knowledge is a light â€” and the light of Allah is not given to a sinner." A heart at peace with God is a brain low in cortisol.</p>
+    </div>
+    <div class="pillar">
+      <div class="pillar-num">Pillar Two</div>
+      <h3>Qiyam al-Layl â€” Night Prayer</h3>
+      <p>Waking before Fajr aligns devotion with the brain's peak memory consolidation window â€” 2â€“5am, when the hippocampus transfers learning into long-term storage.</p>
+    </div>
+    <div class="pillar">
+      <div class="pillar-num">Pillar Three</div>
+      <h3>Sawm â€” Fasting</h3>
+      <p>The Prophet ï·º fasted Mondays and Thursdays. Fasting triggers BDNF â€” a protein that grows new neurons. The scholars described fasting as sharpening the mind.</p>
+    </div>
+    <div class="pillar">
+      <div class="pillar-num">Pillar Four</div>
+      <h3>Tilawa & Dhikr â€” Repetition</h3>
+      <p>Quran recitation engages six brain regions simultaneously. Daily dhikr produces alpha waves that enhance focus. Multi-channel encoding creates the most durable memories.</p>
+    </div>
+  </div>
+
+  <div class="card" style="border-left:3px solid var(--sage); text-align:center; padding:1.8rem;">
+    <div style="font-family:'Amiri',serif; font-size:1.45rem; color:var(--gold); direction:rtl; margin-bottom:0.5rem; line-height:1.8;">
+      Ø´ÙŽÙƒÙŽÙˆÙ’ØªÙ Ø¥ÙÙ„ÙŽÙ‰ ÙˆÙŽÙƒÙÙŠØ¹Ù Ø³ÙÙˆØ¡ÙŽ Ø­ÙÙÙ’Ø¸ÙÙŠ Â· ÙÙŽØ£ÙŽØ±Ù’Ø´ÙŽØ¯ÙŽÙ†ÙÙŠ Ø¥ÙÙ„ÙŽÙ‰ ØªÙŽØ±Ù’ÙƒÙ Ø§Ù„Ù’Ù…ÙŽØ¹ÙŽØ§ØµÙÙŠ
+    </div>
+    <div style="font-size:0.84rem; color:var(--ink-soft); font-style:italic; margin-bottom:1.2rem; max-width:480px; margin-left:auto; margin-right:auto;">
+      "I complained to Waki' about my weak memory, and he guided me to abandon sins. He said: Know that knowledge is a light, and the light of Allah is not given to a sinner." â€” Imam Shafi'i
+    </div>
+    <button class="start-btn" onclick="showPage('tracker')">Begin Today's Practice â†’</button>
+  </div>
+</div>
+
+<!-- TRACKER -->
+<div class="page" id="page-tracker">
+  <div class="section-label">Daily Practice</div>
+  <div class="section-title">Today's Tracker</div>
+  <p class="section-sub">Mark each act as you complete it. The Prophet ï·º said: "The most beloved deeds to Allah are those done regularly, even if small."</p>
+
+  <div class="tracker-date" id="tracker-date"></div>
+
+  <div class="tracker-grid">
+    <div class="tracker-block">
+      <h3>ðŸ•Œ Five Daily Prayers</h3>
+      <div class="check-row" onclick="toggleCheck(this)" data-key="fajr"><label>Fajr</label><div class="check-box"></div></div>
+      <div class="check-row" onclick="toggleCheck(this)" data-key="dhuhr"><label>Dhuhr</label><div class="check-box"></div></div>
+      <div class="check-row" onclick="toggleCheck(this)" data-key="asr"><label>Asr</label><div class="check-box"></div></div>
+      <div class="check-row" onclick="toggleCheck(this)" data-key="maghrib"><label>Maghrib</label><div class="check-box"></div></div>
+      <div class="check-row" onclick="toggleCheck(this)" data-key="isha"><label>Isha</label><div class="check-box"></div></div>
+    </div>
+
+    <div class="tracker-block">
+      <h3>ðŸŒ™ Sunnah Practices</h3>
+      <div class="check-row" onclick="toggleCheck(this)" data-key="tahajjud"><label>Tahajjud (Night Prayer)</label><div class="check-box"></div></div>
+      <div class="check-row" onclick="toggleCheck(this)" data-key="fasting"><label>Sunnah Fast (Mon/Thu)</label><div class="check-box"></div></div>
+      <div class="check-row" onclick="toggleCheck(this)" data-key="quran_read"><label>Quran Recitation</label><div class="check-box"></div></div>
+      <div class="check-row" onclick="toggleCheck(this)" data-key="sleep_early"><label>Slept Before Midnight</label><div class="check-box"></div></div>
+      <div class="check-row" onclick="toggleCheck(this)" data-key="exercise"><label>Physical Activity</label><div class="check-box"></div></div>
+    </div>
+
+    <div class="tracker-block">
+      <h3>ðŸ“¿ Dhikr Counter</h3>
+      <div class="dhikr-counter">
+        <label>Subhanallah (33Ã—)</label>
+        <div class="counter-ctrl">
+          <button class="counter-btn" onclick="adjustCount('subhan',-1)">âˆ’</button>
+          <span class="counter-val" id="count-subhan">0</span>
+          <button class="counter-btn" onclick="adjustCount('subhan',1)">+</button>
+        </div>
+      </div>
+      <div class="dhikr-counter">
+        <label>Alhamdulillah (33Ã—)</label>
+        <div class="counter-ctrl">
+          <button class="counter-btn" onclick="adjustCount('alhamd',-1)">âˆ’</button>
+          <span class="counter-val" id="count-alhamd">0</span>
+          <button class="counter-btn" onclick="adjustCount('alhamd',1)">+</button>
+        </div>
+      </div>
+      <div class="dhikr-counter">
+        <label>Allahu Akbar (34Ã—)</label>
+        <div class="counter-ctrl">
+          <button class="counter-btn" onclick="adjustCount('akbar',-1)">âˆ’</button>
+          <span class="counter-val" id="count-akbar">0</span>
+          <button class="counter-btn" onclick="adjustCount('akbar',1)">+</button>
+        </div>
+      </div>
+      <div class="dhikr-counter">
+        <label>Astaghfirullah</label>
+        <div class="counter-ctrl">
+          <button class="counter-btn" onclick="adjustCount('astaghfir',-1)">âˆ’</button>
+          <span class="counter-val" id="count-astaghfir">0</span>
+          <button class="counter-btn" onclick="adjustCount('astaghfir',1)">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tracker-block">
+      <h3>ðŸ”¥ 7-Day Streak</h3>
+      <p style="font-size:0.8rem; color:var(--ink-light);">Consistency builds the habit. Ibn Hanbal maintained his practices for decades without interruption.</p>
+      <div class="streak-bar" id="streak-bar"></div>
+      <div style="margin-top:0.8rem; font-size:0.82rem; color:var(--ink-light);">
+        Current streak: <strong id="streak-count" style="color:var(--gold);">0 days</strong>
+      </div>
+    </div>
+  </div>
+
+  <button class="save-btn" onclick="saveTracker()">Save Today's Progress</button>
+</div>
+
+<!-- QURAN -->
+<div class="page" id="page-quran">
+  <div class="section-label">Memorization</div>
+  <div class="section-title">Quran Progress Tracker</div>
+  <p class="section-sub">Track each surah. Regular muraja'a (review) is the secret of every hafidh. Use spaced repetition â€” review again before you forget.</p>
+
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-val" id="q-total">0</div><div class="stat-label">Surahs Added</div></div>
+    <div class="stat-box"><div class="stat-val" id="q-memorized">0</div><div class="stat-label">Fully Memorized</div></div>
+    <div class="stat-box"><div class="stat-val" id="q-review">0</div><div class="stat-label">Due for Review</div></div>
+  </div>
+
+  <div class="card card-sm" style="margin-bottom:1.5rem;">
+    <div style="display:flex; gap:0.7rem; flex-wrap:wrap; align-items:flex-end;">
+      <div class="form-group" style="flex:2; min-width:130px;">
+        <label>Surah Name</label>
+        <input type="text" id="surah-name" placeholder="e.g. Al-Mulk" />
+      </div>
+      <div class="form-group" style="min-width:75px;">
+        <label>Total Ayahs</label>
+        <input type="number" id="surah-ayahs" placeholder="30" min="1" max="286" />
+      </div>
+      <div class="form-group" style="min-width:75px;">
+        <label>Memorized</label>
+        <input type="number" id="surah-done" placeholder="0" min="0" />
+      </div>
+      <div class="form-group">
+        <label>&nbsp;</label>
+        <button class="add-btn" onclick="addSurah()">+ Add Surah</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="surah-list" id="surah-list">
+    <div class="empty-state">
+      <div class="empty-icon">ðŸ“–</div>
+      <p>No surahs added yet.<br>Begin with what you already know.</p>
+    </div>
+  </div>
+</div>
+
+<!-- TIPS -->
+<div class="page" id="page-tips">
+  <div class="section-label">Knowledge</div>
+  <div class="section-title">Islamic Memory Lessons</div>
+  <p class="section-sub">Wisdom from the scholars, confirmed by modern cognitive science.</p>
+
+  <div class="tip-tabs">
+    <button class="tip-tab active" onclick="filterTips('all',this)">All</button>
+    <button class="tip-tab" onclick="filterTips('pillar',this)">The 4 Pillars</button>
+    <button class="tip-tab" onclick="filterTips('scholar',this)">Scholar Stories</button>
+    <button class="tip-tab" onclick="filterTips('hadith',this)">Hadith & Sunnah</button>
+    <button class="tip-tab" onclick="filterTips('science',this)">Cognitive Science</button>
+  </div>
+
+  <div class="tip-cards" id="tip-cards"></div>
+</div>
+
+<!-- QUIZ -->
+<div class="page" id="page-quiz">
+  <div class="section-label">Active Recall</div>
+  <div class="section-title">Spaced Repetition Quiz</div>
+  <p class="section-sub">Add what you are learning â€” Islamic knowledge, Quran meanings, hadith â€” then test yourself. Active recall is the strongest memory technique known to science.</p>
+
+  <div id="quiz-setup-view">
+    <div class="card card-sm" style="margin-bottom:1rem;">
+      <p style="font-size:0.8rem; color:var(--ink-light); margin-bottom:0.75rem;">Add a question & answer to your review deck:</p>
+      <div class="quiz-add-row">
+        <input type="text" id="quiz-q" placeholder="Question (e.g. What is the first pillar of Islam?)" />
+      </div>
+      <div class="quiz-add-row">
+        <input type="text" id="quiz-a" placeholder="Answer (e.g. Shahada â€” declaration of faith)" />
+        <button class="add-btn" onclick="addFlashcard()">+ Add</button>
+      </div>
+    </div>
+
+    <div class="flashcard-deck" id="flashcard-deck">
+      <div class="empty-state">
+        <div class="empty-icon">ðŸ§ </div>
+        <p>Your deck is empty.<br>Add cards to begin your review practice.</p>
+      </div>
+    </div>
+
+    <div id="quiz-start-area" style="text-align:center; padding:1rem; display:none;"></div>
+  </div>
+
+  <div id="quiz-active-view" style="display:none; text-align:center;">
+    <div class="progress-indicator" id="quiz-progress"></div>
+    <div class="flashcard" id="flashcard" onclick="flipCard()">
+      <div class="flashcard-inner">
+        <div class="fc-front">
+          <div class="fc-label">Question â€” tap to reveal answer</div>
+          <div class="fc-question" id="fc-question"></div>
+        </div>
+        <div class="fc-back">
+          <div class="fc-answer" id="fc-answer"></div>
+          <div class="fc-hint">Rate your recall below</div>
+        </div>
+      </div>
+    </div>
+    <div class="rating-row" id="rating-row" style="display:none;">
+      <button class="rate-btn rate-again" onclick="rateCard('again')">Again</button>
+      <button class="rate-btn rate-good" onclick="rateCard('good')">Good</button>
+      <button class="rate-btn rate-easy" onclick="rateCard('easy')">Easy âœ“</button>
+    </div>
+  </div>
+
+  <div id="quiz-complete-view" style="display:none;">
+    <div class="quiz-complete">
+      <div class="big-icon">ðŸŽ‰</div>
+      <h3>Session Complete!</h3>
+      <p>Well done. Return tomorrow to review again â€” the scholars reviewed every day without exception.<br><br>"The most beloved deeds to Allah are those done consistently." â€” Prophet Muhammad ï·º</p>
+      <br>
+      <button class="start-btn" onclick="resetQuiz()">â† Back to Deck</button>
+    </div>
+  </div>
+</div>
+
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem('daq_'+k)); } catch { return null; } },
+  set(k, v) { localStorage.setItem('daq_'+k, JSON.stringify(v)); }
+};
+const todayKey = () => new Date().toISOString().split('T')[0];
+
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+  if (name==='tracker') initTracker();
+  if (name==='quran') renderSurahs();
+  if (name==='tips') renderTips('all');
+  if (name==='quiz') renderDeck();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+// â”€â”€ TRACKER â”€â”€
+function initTracker() {
+  const d = new Date();
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  document.getElementById('tracker-date').textContent =
+    days[d.getDay()] + ', ' + d.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+
+  const saved = store.get('tracker_'+todayKey()) || {};
+  document.querySelectorAll('.check-row').forEach(row => {
+    if (saved[row.dataset.key]) row.classList.add('done');
+    else row.classList.remove('done');
+  });
+  ['subhan','alhamd','akbar','astaghfir'].forEach(k => {
+    const el = document.getElementById('count-'+k);
+    if (el) el.textContent = saved['cnt_'+k] || 0;
+  });
+  renderStreak();
+}
+
+function toggleCheck(row) { row.classList.toggle('done'); }
+
+function adjustCount(k, d) {
+  const el = document.getElementById('count-'+k);
+  el.textContent = Math.max(0, parseInt(el.textContent)+d);
+}
+
+function saveTracker() {
+  const today = todayKey();
+  const data = {};
+  document.querySelectorAll('.check-row').forEach(r => { data[r.dataset.key] = r.classList.contains('done'); });
+  ['subhan','alhamd','akbar','astaghfir'].forEach(k => {
+    data['cnt_'+k] = parseInt(document.getElementById('count-'+k).textContent);
+  });
+  const prayers = ['fajr','dhuhr','asr','maghrib','isha'];
+  data.complete = prayers.filter(p=>data[p]).length >= 5;
+  store.set('tracker_'+today, data);
+  let history = store.get('streak') || [];
+  if (!history.includes(today)) { history.push(today); store.set('streak', history); }
+  renderStreak();
+  showToast('âœ“ Progress saved!');
+}
+
+function renderStreak() {
+  const bar = document.getElementById('streak-bar');
+  const history = store.get('streak') || [];
+  bar.innerHTML = '';
+  const dnames = ['S','M','T','W','T','F','S'];
+  const today = new Date();
+  let streak = 0;
+  for (let i=6; i>=0; i--) {
+    const d = new Date(today); d.setDate(today.getDate()-i);
+    const k = d.toISOString().split('T')[0];
+    const done = history.includes(k);
+    if (done) streak++;
+    const div = document.createElement('div');
+    div.className = 'streak-day'+(done?' complete':'')+(i===0?' today':'');
+    div.textContent = dnames[d.getDay()];
+    bar.appendChild(div);
+  }
+  document.getElementById('streak-count').textContent = streak+' day'+(streak!==1?'s':'');
+}
+
+// â”€â”€ QURAN â”€â”€
+function addSurah() {
+  const name = document.getElementById('surah-name').value.trim();
+  const ayahs = parseInt(document.getElementById('surah-ayahs').value)||0;
+  const done = parseInt(document.getElementById('surah-done').value)||0;
+  if (!name||ayahs<1) { showToast('Please enter surah name and total ayahs.'); return; }
+  const surahs = store.get('surahs')||[];
+  const next = new Date(); next.setDate(next.getDate()+3);
+  surahs.push({ id:Date.now(), name, ayahs, memorized:Math.min(done,ayahs), lastReview:null, nextReview:todayKey() });
+  store.set('surahs', surahs);
+  ['surah-name','surah-ayahs','surah-done'].forEach(id => document.getElementById(id).value='');
+  renderSurahs(); showToast('âœ“ '+name+' added!');
+}
+
+function updateMem(id, d) {
+  const surahs = store.get('surahs')||[];
+  const s = surahs.find(x=>x.id===id);
+  if (s) { s.memorized = Math.max(0,Math.min(s.ayahs,s.memorized+d)); store.set('surahs',surahs); renderSurahs(); }
+}
+
+function markReviewed(id) {
+  const surahs = store.get('surahs')||[];
+  const s = surahs.find(x=>x.id===id);
+  if (s) {
+    s.lastReview = todayKey();
+    const next = new Date(); next.setDate(next.getDate()+3);
+    s.nextReview = next.toISOString().split('T')[0];
+    store.set('surahs',surahs); renderSurahs();
+    showToast('âœ“ Review logged. Next review in 3 days.');
+  }
+}
+
+function deleteSurah(id) {
+  store.set('surahs',(store.get('surahs')||[]).filter(x=>x.id!==id));
+  renderSurahs();
+}
+
+function renderSurahs() {
+  const surahs = store.get('surahs')||[];
+  const today = todayKey();
+  document.getElementById('q-total').textContent = surahs.length;
+  document.getElementById('q-memorized').textContent = surahs.filter(s=>s.memorized>=s.ayahs).length;
+  document.getElementById('q-review').textContent = surahs.filter(s=>s.nextReview<=today).length;
+  const list = document.getElementById('surah-list');
+  if (!surahs.length) {
+    list.innerHTML='<div class="empty-state"><div class="empty-icon">ðŸ“–</div><p>No surahs added yet.<br>Begin with what you already know.</p></div>';
+    return;
+  }
+  list.innerHTML = surahs.map(s => {
+    const pct = Math.round(s.memorized/s.ayahs*100);
+    const due = s.nextReview<=today;
+    return `<div class="surah-item">
+      <div class="surah-info">
+        <div class="surah-name">${s.name} <span class="badge ${due?'badge-due':'badge-done'}">${due?'Review Due':'Up to Date'}</span></div>
+        <div class="surah-meta">${s.memorized}/${s.ayahs} ayahs Â· Last: ${s.lastReview||'Never'}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+        <div class="progress-label">${pct}%</div>
+        <div style="display:flex;gap:0.3rem;margin-top:0.35rem;justify-content:flex-end;">
+          <button class="counter-btn" onclick="updateMem(${s.id},-1)" style="width:22px;height:22px;font-size:0.78rem;">âˆ’</button>
+          <button class="counter-btn" onclick="updateMem(${s.id},1)" style="width:22px;height:22px;font-size:0.78rem;">+</button>
+        </div>
+      </div>
+      <button class="surah-review-btn" onclick="markReviewed(${s.id})">âœ“ Reviewed</button>
+      <button class="delete-btn" onclick="deleteSurah(${s.id})">âœ•</button>
+    </div>`;
+  }).join('');
+}
+
+// â”€â”€ TIPS â”€â”€
+const TIPS = [
+  { cat:'hadith', icon:'ðŸŒ™', title:'The Night Prayer â€” Tahajjud', src:'Hadith â€” Tirmidhi',
+    arabic:'Ø¹ÙŽÙ„ÙŽÙŠÙ’ÙƒÙŽ Ø¨ÙÙ‚ÙÙŠÙŽØ§Ù…Ù Ø§Ù„Ù„ÙŽÙ‘ÙŠÙ’Ù„Ù ÙÙŽØ¥ÙÙ†ÙŽÙ‘Ù‡Ù Ø¯ÙŽØ£ÙŽØ¨Ù Ø§Ù„ØµÙŽÙ‘Ø§Ù„ÙØ­ÙÙŠÙ†ÙŽ Ù‚ÙŽØ¨Ù’Ù„ÙŽÙƒÙÙ…Ù’',
+    translation:'"Hold fast to night prayer â€” it is the way of the righteous before you." â€” Tirmidhi',
+    body:'Bukhari, Ibn Hanbal, and Shafi\'i all rose for Tahajjud without exception. They used these quiet hours before Fajr to review what they had learned that day â€” not as a technique, but as devotion.',
+    science:'Modern neuroscience shows the 2â€“5am window is when the hippocampus does its most intensive memory consolidation â€” replaying and transferring the day\'s learning into long-term storage. These scholars were timing their most devoted mental effort to the brain\'s peak memory-processing window.' },
+  { cat:'pillar', icon:'â¤ï¸', title:'Taqwa â€” The Light of the Heart', src:"Imam Shafi'i",
+    arabic:'Ø¥ÙÙ†ÙŽÙ‘ Ø§Ù„Ù’Ø¹ÙÙ„Ù’Ù…ÙŽ Ù†ÙÙˆØ±ÙŒ ÙˆÙŽÙ†ÙÙˆØ±Ù Ø§Ù„Ù„ÙŽÙ‘Ù‡Ù Ù„ÙŽØ§ ÙŠÙÙ‡Ù’Ø¯ÙŽÙ‰ Ù„ÙØ¹ÙŽØ§ØµÙ',
+    translation:'"Knowledge is a light, and the light of Allah is not given to a sinner." â€” Waki\' ibn al-Jarrah',
+    body:"When Imam Shafi'i complained of a weak memory to his teacher Waki', the response was not a technique â€” it was taqwa. Abandon sins. Imam Malik gave Shafi'i the same counsel: the light Allah placed in your heart must not be extinguished.",
+    science:'Sin creates a state of chronic moral dissonance â€” low-level psychological stress. Cortisol, the stress hormone, is directly neurotoxic to the hippocampus when chronically elevated. A heart at peace with God is neurologically a brain low in cortisol: clearer, more focused, and more retentive.' },
+  { cat:'pillar', icon:'ðŸŒ™', title:'Sawm â€” Fasting Sharpens the Mind', src:'Sunnah of the Prophet ï·º',
+    arabic:'ØµÙÙˆÙ…ÙÙˆØ§ ØªÙŽØµÙØ­ÙÙ‘ÙˆØ§',
+    translation:'"Fast and you will be healthy." â€” Hadith',
+    body:'The Prophet ï·º fasted every Monday and Thursday throughout the year, and recommended the three white days each month. Ibn Hanbal fasted frequently. The scholars noticed that moderate hunger sharpened the mind â€” overeating was considered an obstacle to serious study.',
+    science:'Fasting triggers BDNF (Brain-Derived Neurotrophic Factor) â€” a protein scientists call "fertilizer for the brain." BDNF promotes the growth of new neurons in the hippocampus and protects existing memory cells. The Prophet\'s guidance on eating one-third food maps precisely onto what metabolic science now confirms about cognitive performance.' },
+  { cat:'pillar', icon:'ðŸ“¿', title:'Dhikr & Tilawa â€” Multi-Channel Encoding', src:'Quran 13:28',
+    arabic:'Ø£ÙŽÙ„ÙŽØ§ Ø¨ÙØ°ÙÙƒÙ’Ø±Ù Ø§Ù„Ù„ÙŽÙ‘Ù‡Ù ØªÙŽØ·Ù’Ù…ÙŽØ¦ÙÙ†ÙÙ‘ Ø§Ù„Ù’Ù‚ÙÙ„ÙÙˆØ¨Ù',
+    translation:'"Verily, in the remembrance of Allah do hearts find rest." â€” Quran 13:28',
+    body:'The scholars recited constantly â€” Quran, tasbih, istighfar. Bukhari recited the entire Quran every three days during Ramadan, reviewing it in every prayer. This was not just worship; it was the engine of memory.',
+    science:'Reciting Quran aloud simultaneously engages the auditory cortex, motor cortex (lips and tongue), emotional processing, visual imagination, and language networks. This multi-channel encoding creates multiple retrieval pathways â€” which is why Quranic verses memorized in childhood can be recalled 60 years later with perfect accuracy.' },
+  { cat:'scholar', icon:'ðŸ“š', title:"Imam Bukhari's Famous Test", src:'Biographical accounts',
+    arabic:'', translation:'',
+    body:'When Bukhari arrived in Baghdad, scholars devised a test: they scrambled 100 authentic hadiths â€” mixing the text of each with a wrong chain of narration â€” and divided them among 10 men. After each narration, Bukhari said calmly: "I do not recognize this." When all 100 were done, he corrected every single one â€” restoring each text to its exact chain from memory, without a single error. He was then tested in Samarqand by 400 scholars. Same result.',
+    science:'What Bukhari possessed was relational memory â€” not isolated facts, but information encoded within a dense web of relationships. Each isnad (chain) was a structured narrative connecting people across generations. This is the highest-level memory architecture the human brain achieves, and it is built through decades of consistent, structured repetition.' },
+  { cat:'scholar', icon:'ðŸ–Šï¸', title:"Ibn Hanbal â€” The Human Encyclopedia", src:"Siyar A'lam al-Nubala",
+    arabic:'', translation:'',
+    body:'Ahmad ibn Hanbal memorized over one million hadith narrations. His method: travel across the Islamic world to hear each narration from its source, write it in his own hand, then review it across decades of teaching. He always checked his written records rather than relying on memory alone â€” not from weakness, but from intellectual humility.',
+    science:'Ibn Hanbal ran the most intensive spaced repetition program in human history centuries before the concept existed. Traveling to hear a narration, writing it, teaching it to students, referencing it again decades later â€” each step was a distinct retrieval event that carved the memory progressively deeper. His habit of verification prevented false memories from corrupting his knowledge over time.' },
+  { cat:'hadith', icon:'ðŸ’¤', title:"The Prophet's Sleep Discipline", src:'Hadith â€” Bukhari',
+    arabic:'ÙƒÙŽØ§Ù†ÙŽ ÙŠÙŽÙƒÙ’Ø±ÙŽÙ‡Ù Ø§Ù„Ù†ÙŽÙ‘ÙˆÙ’Ù…ÙŽ Ù‚ÙŽØ¨Ù’Ù„ÙŽ Ø§Ù„Ù’Ø¹ÙØ´ÙŽØ§Ø¡Ù ÙˆÙŽØ§Ù„Ù’Ø­ÙŽØ¯ÙÙŠØ«ÙŽ Ø¨ÙŽØ¹Ù’Ø¯ÙŽÙ‡ÙŽØ§',
+    translation:'"He disliked sleeping before Isha prayer and engaging in unnecessary talk after it." â€” Bukhari',
+    body:'The Prophet ï·º established a clear sleep framework: rest after Isha, rise for Fajr, wake for Tahajjud in between. He discouraged unnecessary late-night activity. Sleep was treated as a deliberate act of preparation â€” not a passive default.',
+    science:'Regular, well-timed sleep maximizes slow-wave and REM cycles â€” the two phases where memory consolidation occurs. Irregular sleep or late-night overstimulation disrupts these cycles and significantly impairs next-day learning and recall. The Prophet\'s framework produces exactly the sleep architecture that neuroscience now recommends.' },
+  { cat:'science', icon:'ðŸ§¬', title:'Quran Memorization & Brain Volume', src:'Peer-reviewed research',
+    arabic:'', translation:'',
+    body:'Researchers studying hafidhs (those who have memorized the entire Quran) found measurable differences in brain structure. Those who had memorized more of the Quran showed greater total brain volume â€” more grey matter, white matter, and total brain tissue than non-memorizers.',
+    science:'Quran memorization engages multiple brain regions simultaneously â€” auditory, linguistic, motor, and memory networks â€” producing calming alpha waves that promote focus and retention. The multi-sensory richness of recitation creates exactly the multi-channel encoding that produces the most durable memory traces the human brain is capable of forming.' },
+  { cat:'science', icon:'ðŸƒ', title:'Exercise â€” The Neurogenesis Trigger', src:'Neuroscience research',
+    arabic:'', translation:'',
+    body:'The great scholars were not sedentary. Ibn Hanbal wrestled. Scholars walked miles to reach their teachers. Physical activity was considered part of a healthy, productive scholarly life â€” not separate from it.',
+    science:'Exercise is the single most evidence-backed method for promoting hippocampal neurogenesis â€” the growth of new memory-forming brain cells. It raises BDNF levels, improves blood flow to the prefrontal cortex, and has been shown to improve both working memory and long-term retention. Even a 30-minute walk raises BDNF for several hours afterward.' },
+];
+
+function filterTips(cat, btn) {
+  document.querySelectorAll('.tip-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderTips(cat);
+}
+
+function renderTips(cat) {
+  const filtered = cat==='all' ? TIPS : TIPS.filter(t=>t.cat===cat);
+  document.getElementById('tip-cards').innerHTML = filtered.map(t => `
+    <div class="tip-card">
+      <div class="tip-card-header">
+        <div class="tip-icon">${t.icon}</div>
+        <div><h3>${t.title}</h3><div class="tip-src">${t.src}</div></div>
+      </div>
+      ${t.arabic ? `<div class="arabic-quote">${t.arabic}</div><div class="translation">${t.translation}</div>` : ''}
+      <p>${t.body}</p>
+      ${t.science ? `<div class="science-note"><strong>ðŸ”¬ Cognitive Science:</strong> ${t.science}</div>` : ''}
+    </div>`).join('');
+}
+
+// â”€â”€ QUIZ â”€â”€
+let quizDeck=[], quizIdx=0, againCards=[];
+
+function addFlashcard() {
+  const q = document.getElementById('quiz-q').value.trim();
+  const a = document.getElementById('quiz-a').value.trim();
+  if (!q||!a) { showToast('Please enter both question and answer.'); return; }
+  const cards = store.get('cards')||[];
+  cards.push({ id:Date.now(), q, a, interval:1, due:todayKey() });
+  store.set('cards', cards);
+  document.getElementById('quiz-q').value='';
+  document.getElementById('quiz-a').value='';
+  renderDeck(); showToast('âœ“ Card added!');
+}
+
+function deleteCard(id) {
+  store.set('cards',(store.get('cards')||[]).filter(c=>c.id!==id));
+  renderDeck();
+}
+
+function renderDeck() {
+  const cards = store.get('cards')||[];
+  const today = todayKey();
+  const deck = document.getElementById('flashcard-deck');
+  const startArea = document.getElementById('quiz-start-area');
+  if (!cards.length) {
+    deck.innerHTML='<div class="empty-state"><div class="empty-icon">ðŸ§ </div><p>Your deck is empty.<br>Add cards to begin your review practice.</p></div>';
+    startArea.style.display='none'; return;
+  }
+  deck.innerHTML = cards.map(c => `<div class="flashcard-item">
+    <div class="fc-q">${c.q}</div><div class="fc-sep">â†’</div>
+    <div class="fc-a">${c.a}</div>
+    <span class="badge ${c.due<=today?'badge-due':'badge-done'}">${c.due<=today?'Due':'Later'}</span>
+    <button class="delete-btn" onclick="deleteCard(${c.id})">âœ•</button>
+  </div>`).join('');
+  const due = cards.filter(c=>c.due<=today).length;
+  if (due>0) {
+    startArea.style.display='block';
+    startArea.innerHTML=`<p style="font-size:0.83rem;color:var(--ink-light);margin-bottom:0.9rem;">${due} card${due!==1?'s':''} due for review today.</p><button class="start-btn" onclick="startQuiz()">â–¶ Start Quiz (${due} cards)</button>`;
+  } else {
+    startArea.style.display='none';
+  }
+}
+
+function startQuiz() {
+  const cards = store.get('cards')||[];
+  quizDeck = cards.filter(c=>c.due<=todayKey());
+  againCards=[]; quizIdx=0;
+  document.getElementById('quiz-setup-view').style.display='none';
+  document.getElementById('quiz-active-view').style.display='block';
+  document.getElementById('quiz-complete-view').style.display='none';
+  showCard();
+}
+
+function showCard() {
+  if (quizIdx>=quizDeck.length) {
+    if (againCards.length>0) { quizDeck=[...againCards]; againCards=[]; quizIdx=0; }
+    else {
+      document.getElementById('quiz-active-view').style.display='none';
+      document.getElementById('quiz-complete-view').style.display='block';
+      return;
+    }
+  }
+  const card = quizDeck[quizIdx];
+  document.getElementById('fc-question').textContent = card.q;
+  document.getElementById('fc-answer').textContent = card.a;
+  document.getElementById('quiz-progress').textContent = `Card ${quizIdx+1} of ${quizDeck.length}`;
+  document.getElementById('flashcard').classList.remove('flipped');
+  document.getElementById('rating-row').style.display='none';
+}
+
+function flipCard() {
+  const fc = document.getElementById('flashcard');
+  fc.classList.toggle('flipped');
+  if (fc.classList.contains('flipped')) document.getElementById('rating-row').style.display='flex';
+}
+
+function rateCard(rating) {
+  const card = quizDeck[quizIdx];
+  const cards = store.get('cards')||[];
+  const stored = cards.find(c=>c.id===card.id);
+  if (stored) {
+    let iv = stored.interval||1;
+    if (rating==='again') { againCards.push(card); iv=1; }
+    else if (rating==='good') iv=Math.min(iv*2,14);
+    else iv=Math.min(iv*4,30);
+    stored.interval=iv;
+    const next=new Date(); next.setDate(next.getDate()+iv);
+    stored.due=next.toISOString().split('T')[0];
+    store.set('cards',cards);
+  }
+  quizIdx++; showCard();
+}
+
+function resetQuiz() {
+  document.getElementById('quiz-setup-view').style.display='block';
+  document.getElementById('quiz-active-view').style.display='none';
+  document.getElementById('quiz-complete-view').style.display='none';
+  renderDeck();
+}
+
+// Init
+initTracker();
+</script>
 </body>
 </html>
